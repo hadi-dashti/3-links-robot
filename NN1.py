@@ -103,8 +103,8 @@ history = model.fit(
 
 # === Save model and scaler ===
 os.makedirs("saved_model", exist_ok=True)
-model.save("saved_model/ik_model.h5")
-joblib.dump(scaler_X, "saved_model/input_scaler.pkl")
+model.save("saved_model/NN1/ik_model.h5")
+joblib.dump(scaler_X, "saved_model/NN1/input_scaler.pkl")
 print("✅ Model and scaler saved successfully.")
 
 # === Prediction and evaluation ===
@@ -154,7 +154,7 @@ for i, idx in enumerate(sample_indices):
     ax.add_patch(workspace)
 
 plt.tight_layout()
-plt.savefig("picture/enhanced_loss_prediction_comparison.png", dpi=300)
+plt.savefig("picture/NN1/enhanced_loss_prediction_comparison.png", dpi=300)
 plt.show()
 
 # === Evaluate average and max end-effector error ===
@@ -173,7 +173,7 @@ plt.xlabel('Position Error (meters)')
 plt.ylabel('Number of Samples')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("picture/enhanced_loss_error_distribution.png", dpi=300)
+plt.savefig("picture/NN1/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
 # Final metrics
