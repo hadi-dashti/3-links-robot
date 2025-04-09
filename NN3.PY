@@ -1,5 +1,8 @@
 # NN3.py — نسخه‌ی تقویت‌شده‌ی مدل با ساختار بهتر و کاهش خطا
 
+# ✅ Mean End-Effector Position Error: 0.1815 meters
+# 📈 Max End-Effector Position Error: 0.3314 meters
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -123,34 +126,44 @@ def compute_fk_errors(true_angles, pred_angles):
     return errors
 
 errors = compute_fk_errors(true_angles, pred_angles)
-print(f"Mean End-Effector Position Error: {np.mean(errors):.4f} meters")
-print(f"Max End-Effector Position Error: {np.max(errors):.4f} meters")
+
+# ✅ چاپ فقط نتایج مهم
+mean_error = np.mean(errors)
+max_error = np.max(errors)
+print(f"✅ Mean End-Effector Position Error: {mean_error:.4f} meters")
+print(f"📈 Max End-Effector Position Error: {max_error:.4f} meters")
 
 # === Plot prediction vs ground truth ===
-plt.figure(figsize=(8, 6))
-plt.plot(errors, label="End-Effector Position Error")
+os.makedirs("picture/NN3", exist_ok=True)
+plt.figure(figsize=(10, 6))
+plt.plot(errors, label="End-Effector Position Error", color='darkblue')
 plt.xlabel("Sample")
 plt.ylabel("Error (m)")
-plt.title("Prediction Error per Sample")
+plt.title("End-Effector Prediction Error per Sample")
 plt.legend()
 plt.grid(True)
-plt.savefig("picture/NN3/enhanced_loss_error_distribution.png")
+plt.tight_layout()
+plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
-# === Visualize true vs predicted arms ===
-sample_indices = np.random.choice(len(pred_angles), size=5, replace=False)
-for idx in sample_indices:
+# === Visualize 20 true vs predicted arms in one image ===
+sample_indices = np.random.choice(len(pred_angles), size=20, replace=False)
+fig, axs = plt.subplots(4, 5, figsize=(20, 16))
+fig.suptitle("20 Sample Predictions: True vs Predicted Arms", fontsize=20)
+
+for ax, idx in zip(axs.ravel(), sample_indices):
     joints_true = forward_kinematics(true_angles[idx])
     joints_pred = forward_kinematics(pred_angles[idx])
 
-    plt.figure(figsize=(6, 6))
-    plt.plot(*zip(*joints_true), marker='o', label='True')
-    plt.plot(*zip(*joints_pred), marker='x', label='Predicted')
-    plt.xlim(-3.5, 3.5)
-    plt.ylim(-3.5, 3.5)
-    plt.title(f"Sample {idx}: True vs Predicted Arm")
-    plt.grid(True)
-    plt.legend()
-    plt.gca().set_aspect('equal', adjustable='box')
-    plt.savefig(f"picture/NN3/sample_{idx}_prediction_comparison.png")
-    plt.show()
+    ax.plot(*zip(*joints_true), marker='o', label='True')
+    ax.plot(*zip(*joints_pred), marker='x', label='Predicted')
+    ax.set_xlim(-3.5, 3.5)
+    ax.set_ylim(-3.5, 3.5)
+    ax.set_title(f"Sample {idx}")
+    ax.grid(True)
+    ax.set_aspect('equal')
+    ax.legend()
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.savefig("picture/NN3/20_samples_prediction_comparison.png", dpi=300)
+plt.show()

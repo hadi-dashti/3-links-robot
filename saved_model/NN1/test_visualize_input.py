@@ -68,7 +68,7 @@ data_dir = "saved_model/NN1/data"
 os.makedirs(data_dir, exist_ok=True)
 
 # === Save joint angles ===
-angles_path = os.path.join(data_dir, "angles_log.csv")
+angles_path = os.path.join(data_dir, "angles (nn1).csv")
 write_header = not os.path.exists(angles_path)
 
 with open(angles_path, mode='a', newline='') as file:
@@ -78,7 +78,7 @@ with open(angles_path, mode='a', newline='') as file:
     writer.writerow([x_input, y_input, theta[0], theta[1], theta[2]])
 
 # === Save error ===
-error_path = os.path.join(data_dir, "error_log.csv")
+error_path = os.path.join(data_dir, "error (nn1).csv")
 write_header = not os.path.exists(error_path)
 
 with open(error_path, mode='a', newline='') as file:

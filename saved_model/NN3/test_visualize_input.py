@@ -64,7 +64,7 @@ plt.savefig("saved_model/NN3/test_result_visual.png", dpi=300)
 plt.show()
 
 # === Save joint angles ===
-angles_path = "saved_model/NN3/data/angles_log.csv"
+angles_path = "saved_model/NN3/data/angles (nn3).csv"
 write_header = not os.path.exists(angles_path)
 
 with open(angles_path, mode='a', newline='') as file:
@@ -74,7 +74,7 @@ with open(angles_path, mode='a', newline='') as file:
     writer.writerow([x_input, y_input, theta[0], theta[1], theta[2]])
 
 # === Save error ===
-error_path = "saved_model/NN3/data/error_log.csv"
+error_path = "saved_model/NN3/data/error (nn3).csv"
 write_header = not os.path.exists(error_path)
 
 with open(error_path, mode='a', newline='') as file:
