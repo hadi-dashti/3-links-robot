@@ -1,5 +1,3 @@
-#Mean End-Effector Position Error: 0.2196 meters
-#Max End-Effector Position Error: 0.5339 meters
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
