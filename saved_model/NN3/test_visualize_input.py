@@ -9,8 +9,8 @@ import csv
 import os
 
 # === Load model and scaler ===
-model = load_model("saved_model/NN2/ik_model.h5", compile=False)
-scaler_X = joblib.load("saved_model/NN2/input_scaler.pkl")
+model = load_model("saved_model/NN3/ik_model.h5", compile=False)
+scaler_X = joblib.load("saved_model/NN3/input_scaler.pkl")
 
 # === Define input (x, y) ===
 x_input = float(input("Enter x target (recommended range -2.8 to 2.8): "))
@@ -20,8 +20,17 @@ y_input = float(input("Enter y target (recommended range -2.8 to 2.8): "))
 r = np.sqrt(x_input**2 + y_input**2)
 angle = np.arctan2(y_input, x_input)
 
+# ویژگی‌های ترکیبی پیشرفته
+x2 = x_input ** 2
+y2 = y_input ** 2
+xy = x_input * y_input
+x_r = x_input / r
+y_r = y_input / r
+cos_angle = np.cos(angle)
+sin_angle = np.sin(angle)
+
 # === Prepare input for prediction ===
-input_point = np.array([[x_input, y_input, r, angle]])
+input_point = np.array([[x_input, y_input, r, angle, x2, y2, xy, x_r, y_r, cos_angle, sin_angle]])
 input_scaled = scaler_X.transform(input_point)
 
 # === Predict output (sin/cos of angles) ===
@@ -60,11 +69,12 @@ plt.axis("equal")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig("saved_model/NN2/test_result_visual.png", dpi=300)
+plt.savefig("saved_model/NN3/test_result_visual.png", dpi=300)
 plt.show()
 
 # === Save joint angles ===
-angles_path = "saved_model/NN2/data/angles (nn2).csv"
+os.makedirs("saved_model/NN3/data", exist_ok=True)
+angles_path = "saved_model/NN3/data/angles (nn3).csv"
 write_header = not os.path.exists(angles_path)
 
 with open(angles_path, mode='a', newline='') as file:
@@ -74,7 +84,7 @@ with open(angles_path, mode='a', newline='') as file:
     writer.writerow([x_input, y_input, theta[0], theta[1], theta[2]])
 
 # === Save error ===
-error_path = "saved_model/NN2/data/error (nn2).csv"
+error_path = "saved_model/NN3/data/error (nn3).csv"
 write_header = not os.path.exists(error_path)
 
 with open(error_path, mode='a', newline='') as file:

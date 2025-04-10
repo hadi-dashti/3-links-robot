@@ -1,8 +1,7 @@
-# NN2.py — نسخه‌ی تقویت‌شده‌ی مدل با ساختار بهتر و کاهش خطا
-# تو این مدل ما اومدیم با تغییر تابع لاس آن رو جوری تنظیم کردیم که فقط و فقط براش مهم رسیدن باشه 
+# NN3.py — نسخه‌ی تقویت‌شده‌ی مدل با ویژگی‌های پیشرفته برای کاهش بیشتر خطای مکان
 
-# ✅ Mean End-Effector Position Error: 0.0071 meters
-# 📈 Max End-Effector Position Error: 0.0478 meters
+# ✅ Mean End-Effector Position Error: 0.0036 meters
+# 📈 Max End-Effector Position Error: 0.0588 meters
 
 import pandas as pd
 import numpy as np
@@ -17,12 +16,26 @@ import os
 # === Load dataset ===
 data = pd.read_csv("dataset/robot_data_limited_expanded.csv")
 
-# === Feature engineering ===
+# === Fix types in case columns are strings ===
+columns_to_convert = ['x', 'y', 'sin_theta1', 'sin_theta2', 'sin_theta3', 'cos_theta1', 'cos_theta2', 'cos_theta3']
+for col in columns_to_convert:
+    data[col] = pd.to_numeric(data[col], errors='coerce')
+data = data.dropna()
+
+# === Feature engineering (پیشرفته) ===
 data['radius'] = np.sqrt(data['x']**2 + data['y']**2)
 data['angle'] = np.arctan2(data['y'], data['x'])
 
+data['x2'] = data['x']**2
+data['y2'] = data['y']**2
+data['xy'] = data['x'] * data['y']
+data['x_r'] = data['x'] / data['radius']
+data['y_r'] = data['y'] / data['radius']
+data['cos_angle'] = np.cos(data['angle'])
+data['sin_angle'] = np.sin(data['angle'])
+
 # === Input/output ===
-X = data[['x', 'y', 'radius', 'angle']].values
+X = data[['x', 'y', 'radius', 'angle', 'x2', 'y2', 'xy', 'x_r', 'y_r', 'cos_angle', 'sin_angle']].values
 y = data[['sin_theta1', 'sin_theta2', 'sin_theta3', 'cos_theta1', 'cos_theta2', 'cos_theta3']].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -35,12 +48,7 @@ X_test_scaled = scaler_X.transform(X_test)
 # === Loss function ===
 @tf.function
 def combined_loss(y_true, y_pred):
-    sin_true, cos_true = y_true[:, :3], y_true[:, 3:]
     sin_pred, cos_pred = y_pred[:, :3], y_pred[:, 3:]
-
-    mse_loss = tf.reduce_mean(tf.square(sin_true - sin_pred) + tf.square(cos_true - cos_pred))
-
-    theta_true = tf.atan2(sin_true, cos_true)
     theta_pred = tf.atan2(sin_pred, cos_pred)
 
     def batch_fk(thetas):
@@ -49,17 +57,17 @@ def combined_loss(y_true, y_pred):
         y = tf.sin(theta1) + tf.sin(theta1 + theta2) + tf.sin(theta1 + theta2 + theta3)
         return tf.stack([x, y], axis=1)
 
-    end_true = batch_fk(theta_true)
+    end_true = batch_fk(tf.atan2(y_true[:, :3], y_true[:, 3:]))
     end_pred = batch_fk(theta_pred)
 
     fk_loss = tf.reduce_mean(tf.square(end_true - end_pred))
-    return 0 * mse_loss + 1 * fk_loss
+    return fk_loss
 
 # === Model ===
 def build_model():
     l2 = tf.keras.regularizers.l2(1e-4)
     return tf.keras.Sequential([
-        tf.keras.layers.Input(shape=(4,)),
+        tf.keras.layers.Input(shape=(X_train_scaled.shape[1],)),
         tf.keras.layers.Dense(256, activation='swish', kernel_regularizer=l2),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Dense(128, activation='swish', kernel_regularizer=l2),
@@ -85,9 +93,9 @@ history = model.fit(
 )
 
 # === Save model ===
-os.makedirs("saved_model/NN2", exist_ok=True)
-model.save("saved_model/NN2/ik_model.h5")
-joblib.dump(scaler_X, "saved_model/NN2/input_scaler.pkl")
+os.makedirs("saved_model/NN3", exist_ok=True)
+model.save("saved_model/NN3/ik_model.h5")
+joblib.dump(scaler_X, "saved_model/NN3/input_scaler.pkl")
 
 # === Prediction & evaluation ===
 y_pred = model.predict(X_test_scaled)
@@ -135,7 +143,7 @@ print(f"✅ Mean End-Effector Position Error: {mean_error:.4f} meters")
 print(f"📈 Max End-Effector Position Error: {max_error:.4f} meters")
 
 # === Plot prediction vs ground truth ===
-os.makedirs("picture/NN2", exist_ok=True)
+os.makedirs("picture/NN3", exist_ok=True)
 plt.figure(figsize=(10, 6))
 plt.plot(errors, label="End-Effector Position Error", color='darkblue')
 plt.xlabel("Sample")
@@ -144,11 +152,10 @@ plt.title("End-Effector Prediction Error per Sample")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("picture/NN2/enhanced_loss_error_distribution.png", dpi=300)
+plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
 # === Plot histogram of position errors ===
-os.makedirs("picture/NN2", exist_ok=True)
 plt.figure(figsize=(12, 6))
 plt.hist(errors, bins=50, color='skyblue', edgecolor='black')
 plt.xlabel("Position Error (meters)")
@@ -156,7 +163,7 @@ plt.ylabel("Number of Samples")
 plt.title("End-Effector Position Error Distribution (Enhanced Loss)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("picture/NN2/enhanced_loss_error_distribution.png", dpi=300)
+plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
 # === Visualize 20 true vs predicted arms in one image ===
@@ -178,5 +185,5 @@ for ax, idx in zip(axs.ravel(), sample_indices):
     ax.legend()
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("picture/NN2/20_samples_prediction_comparison.png", dpi=300)
+plt.savefig("picture/NN3/20_samples_prediction_comparison.png", dpi=300)
 plt.show()
