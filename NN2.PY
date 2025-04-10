@@ -1,7 +1,7 @@
 # NN3.py — نسخه‌ی تقویت‌شده‌ی مدل با ساختار بهتر و کاهش خطا
 
-# ✅ Mean End-Effector Position Error: 0.0077 meters
-# 📈 Max End-Effector Position Error: 0.0475 meters
+# ✅ Mean End-Effector Position Error: 0.0071 meters
+# 📈 Max End-Effector Position Error: 0.0478 meters
 
 import pandas as pd
 import numpy as np
@@ -84,9 +84,9 @@ history = model.fit(
 )
 
 # === Save model ===
-os.makedirs("saved_model/NN3", exist_ok=True)
-model.save("saved_model/NN3/ik_model.h5")
-joblib.dump(scaler_X, "saved_model/NN3/input_scaler.pkl")
+os.makedirs("saved_model/NN2", exist_ok=True)
+model.save("saved_model/NN2/ik_model.h5")
+joblib.dump(scaler_X, "saved_model/NN2/input_scaler.pkl")
 
 # === Prediction & evaluation ===
 y_pred = model.predict(X_test_scaled)
@@ -134,7 +134,7 @@ print(f"✅ Mean End-Effector Position Error: {mean_error:.4f} meters")
 print(f"📈 Max End-Effector Position Error: {max_error:.4f} meters")
 
 # === Plot prediction vs ground truth ===
-os.makedirs("picture/NN3", exist_ok=True)
+os.makedirs("picture/NN2", exist_ok=True)
 plt.figure(figsize=(10, 6))
 plt.plot(errors, label="End-Effector Position Error", color='darkblue')
 plt.xlabel("Sample")
@@ -143,11 +143,11 @@ plt.title("End-Effector Prediction Error per Sample")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
+plt.savefig("picture/NN2/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
 # === Plot histogram of position errors ===
-os.makedirs("picture/NN3", exist_ok=True)
+os.makedirs("picture/NN2", exist_ok=True)
 plt.figure(figsize=(12, 6))
 plt.hist(errors, bins=50, color='skyblue', edgecolor='black')
 plt.xlabel("Position Error (meters)")
@@ -155,7 +155,7 @@ plt.ylabel("Number of Samples")
 plt.title("End-Effector Position Error Distribution (Enhanced Loss)")
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
+plt.savefig("picture/NN2/enhanced_loss_error_distribution.png", dpi=300)
 plt.show()
 
 # === Visualize 20 true vs predicted arms in one image ===
@@ -177,5 +177,5 @@ for ax, idx in zip(axs.ravel(), sample_indices):
     ax.legend()
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("picture/NN3/20_samples_prediction_comparison.png", dpi=300)
+plt.savefig("picture/NN2/20_samples_prediction_comparison.png", dpi=300)
 plt.show()

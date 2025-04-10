@@ -9,8 +9,8 @@ import csv
 import os
 
 # === Load model and scaler ===
-model = load_model("saved_model/NN3/ik_model.h5", compile=False)
-scaler_X = joblib.load("saved_model/NN3/input_scaler.pkl")
+model = load_model("saved_model/NN2/ik_model.h5", compile=False)
+scaler_X = joblib.load("saved_model/NN2/input_scaler.pkl")
 
 # === Define input (x, y) ===
 x_input = float(input("Enter x target (recommended range -2.8 to 2.8): "))
@@ -60,11 +60,11 @@ plt.axis("equal")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig("saved_model/NN3/test_result_visual.png", dpi=300)
+plt.savefig("saved_model/NN2/test_result_visual.png", dpi=300)
 plt.show()
 
 # === Save joint angles ===
-angles_path = "saved_model/NN3/data/angles (nn3).csv"
+angles_path = "saved_model/NN2/data/angles (nn3).csv"
 write_header = not os.path.exists(angles_path)
 
 with open(angles_path, mode='a', newline='') as file:
@@ -74,7 +74,7 @@ with open(angles_path, mode='a', newline='') as file:
     writer.writerow([x_input, y_input, theta[0], theta[1], theta[2]])
 
 # === Save error ===
-error_path = "saved_model/NN3/data/error (nn3).csv"
+error_path = "saved_model/NN2/data/error (nn3).csv"
 write_header = not os.path.exists(error_path)
 
 with open(error_path, mode='a', newline='') as file:
