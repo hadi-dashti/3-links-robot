@@ -1,7 +1,7 @@
 # NN3.py — نسخه‌ی تقویت‌شده‌ی مدل با ساختار بهتر و کاهش خطا
 
-# ✅ Mean End-Effector Position Error: 0.1815 meters
-# 📈 Max End-Effector Position Error: 0.3314 meters
+# ✅ Mean End-Effector Position Error: 0.0077 meters
+# 📈 Max End-Effector Position Error: 0.0475 meters
 
 import pandas as pd
 import numpy as np
@@ -52,7 +52,7 @@ def combined_loss(y_true, y_pred):
     end_pred = batch_fk(theta_pred)
 
     fk_loss = tf.reduce_mean(tf.square(end_true - end_pred))
-    return 0.6 * mse_loss + 0.4 * fk_loss
+    return 0 * mse_loss + 1 * fk_loss
 
 # === Model ===
 def build_model():
@@ -141,6 +141,18 @@ plt.xlabel("Sample")
 plt.ylabel("Error (m)")
 plt.title("End-Effector Prediction Error per Sample")
 plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)
+plt.show()
+
+# === Plot histogram of position errors ===
+os.makedirs("picture/NN3", exist_ok=True)
+plt.figure(figsize=(12, 6))
+plt.hist(errors, bins=50, color='skyblue', edgecolor='black')
+plt.xlabel("Position Error (meters)")
+plt.ylabel("Number of Samples")
+plt.title("End-Effector Position Error Distribution (Enhanced Loss)")
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("picture/NN3/enhanced_loss_error_distribution.png", dpi=300)

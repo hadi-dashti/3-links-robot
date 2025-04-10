@@ -1,3 +1,5 @@
+#این عملا به هیچ دردی نمیخوره ولی حال نداریم پاکش کنیم
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
