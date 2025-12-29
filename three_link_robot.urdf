@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<robot name="three_link_robot">
+
+  <!-- لینک اول -->
+  <link name="link1">
+    <visual>
+      <geometry>
+        <box size="1.0 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0.5 0 0" rpy="0 0 0"/>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- لینک دوم -->
+  <link name="link2">
+    <visual>
+      <geometry>
+        <box size="1.0 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0.5 0 0" rpy="0 0 0"/>
+      <material name="green">
+        <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- لینک سوم -->
+  <link name="link3">
+    <visual>
+      <geometry>
+        <box size="1.0 0.05 0.05"/>
+      </geometry>
+      <origin xyz="0.5 0 0" rpy="0 0 0"/>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- مفصل اول -->
+  <joint name="joint1" type="revolute">
+    <parent link="world"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10.0" velocity="2.0" lower="-1.57" upper="1.57"/>
+  </joint>
+
+  <!-- مفصل دوم -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="1.0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10.0" velocity="2.0" lower="0" upper="3.14"/>
+  </joint>
+
+  <!-- مفصل سوم -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="1.0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10.0" velocity="2.0" lower="-2.36" upper="2.36"/>
+  </joint>
+
+</robot>
