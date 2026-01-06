@@ -15,12 +15,12 @@ This report compares a symbolic manual dynamics simulator against PyBullet for i
 
 | Quantity | MAE | RMSE | Rel. MAE (vs mean |manual|) |
 |---|---:|---:|---:|
-| q | 2.154e+00 | 3.919e+00 | 6.121e-01 |
-| dq | 7.334e+00 | 1.163e+01 | 9.304e-01 |
-| ddq | 9.403e+01 | 1.727e+02 | 9.232e-01 |
-| G | 5.275e+00 | 7.412e+00 | 4.564e-01 |
-| Cqdot | 5.906e+01 | 1.275e+02 | 9.546e-01 |
-| M(flat) | 7.179e-01 | 1.173e+00 | 4.482e-01 |
+| q | 2.135e+00 | 3.908e+00 | 6.064e-01 |
+| dq | 7.446e+00 | 1.179e+01 | 9.445e-01 |
+| ddq | 9.353e+01 | 1.710e+02 | 9.183e-01 |
+| G | 5.310e+00 | 7.455e+00 | 4.594e-01 |
+| Cqdot | 5.854e+01 | 1.275e+02 | 9.463e-01 |
+| M(flat) | 7.297e-01 | 1.187e+00 | 4.555e-01 |
 
 ## 3) Diagnostics (root-cause analysis)
 
@@ -29,7 +29,7 @@ This report compares a symbolic manual dynamics simulator against PyBullet for i
 - PyBullet may clamp angles if URDF joint limits are set (commonly [-pi, +pi]).
 - Manual models typically allow unbounded angles unless limits are explicitly implemented.
 
-- PyBullet near-±pi hit rate (per joint): **[0.06 0.   0.31]**
+- PyBullet near-±pi hit rate (per joint): **[0.06 0.   0.32]**
 - Manual |q| > 2π rate (per joint): **[0.   0.01 0.53]**
 - ✅ Evidence suggests PyBullet is frequently reaching joint limits; this changes the final state and all dependent terms.
 
@@ -38,7 +38,7 @@ This report compares a symbolic manual dynamics simulator against PyBullet for i
 - Manual ddq is obtained directly from the dynamic equation.
 - In this pipeline, PyBullet ddq is estimated using finite differences; this can deviate from model-based ddq.
 
-- PyBullet ddq consistency (reported vs model-based): MAE = **4.138e+00**
+- PyBullet ddq consistency (reported vs model-based): MAE = **4.482e+00**
 
 ### C) Solver / integration differences
 
